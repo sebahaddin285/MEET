@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniMeet – App Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0e1a;
+    --surface: #131929;
+    --surface2: #1c2540;
+    --accent: #4f8ef7;
+    --accent2: #7c5af7;
+    --green: #22d47e;
+    --red: #f7546a;
+    --amber: #f7b64f;
+    --text: #f0f4ff;
+    --muted: #6b7a99;
+    --border: rgba(79,142,247,0.18);
+    --card: rgba(28,37,64,0.85);
+    --font: 'Sora', sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+  body {
+    background: #06080f;
+    font-family: var(--font);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+    gap: 64px;
+  }
+
+  /* PAGE HEADER */
+  .page-title { text-align: center; }
+  .page-title h1 { font-size: 30px; font-weight: 700; letter-spacing: -1px; background: linear-gradient(135deg,#4f8ef7,#7c5af7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .page-title p { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  /* ROW */
+  .screens-row { display: flex; flex-wrap: wrap; gap: 44px; justify-content: center; width: 100%; max-width: 1700px; }
+  .screen-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .screen-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2.5px; color: var(--muted); }
+
+  /* PHONE */
+  .phone { width: 320px; height: 692px; background: var(--surface); border-radius: 46px; border: 1.5px solid rgba(79,142,247,0.28); overflow: hidden; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 0 6px #0d1120, 0 0 60px rgba(79,142,247,0.07), 0 32px 80px rgba(0,0,0,0.65); }
+  .phone::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:100px; height:28px; background:#0a0e1a; border-radius:0 0 18px 18px; z-index:99; }
+  .status-bar { height:40px; padding:10px 22px 0; display:flex; justify-content:space-between; align-items:center; font-size:11px; font-family:var(--mono); color:var(--muted); flex-shrink:0; z-index:10; position:relative; }
+  .screen-content { flex:1; overflow:hidden; display:flex; flex-direction:column; position:relative; }
+
+  /* ══════════════════════════════════
+     LOGIN
+  ══════════════════════════════════ */
+  .login-bg { position:absolute; inset:0; background: radial-gradient(ellipse at 50% -10%, rgba(79,142,247,0.28) 0%, transparent 60%), radial-gradient(ellipse at 80% 85%, rgba(124,90,247,0.16) 0%, transparent 50%), var(--bg); }
+  .login-content { position:relative; z-index:2; padding:28px 28px 22px; display:flex; flex-direction:column; height:100%; }
+  .wordmark { font-size:34px; font-weight:700; letter-spacing:-1.5px; background:linear-gradient(135deg,#4f8ef7,#7c5af7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .tagline { font-size:12px; color:var(--muted); margin-top:4px; margin-bottom:30px; }
+  .login-headline { font-size:22px; font-weight:600; line-height:1.3; margin-bottom:8px; }
+  .login-sub { font-size:12px; color:var(--muted); line-height:1.65; margin-bottom:28px; }
+  .input-label { font-size:11px; color:var(--muted); margin-bottom:6px; }
+  .input-field { width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:14px; padding:12px 16px; font-size:13px; color:var(--text); font-family:var(--font); display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+  .input-field .ph { color:var(--muted); font-size:13px; }
+  .edu-badge { margin-left:auto; font-size:10px; font-weight:600; background:rgba(79,142,247,0.15); color:var(--accent); padding:2px 8px; border-radius:6px; border:1px solid rgba(79,142,247,0.3); }
+  .btn-primary { width:100%; background:linear-gradient(135deg,#4f8ef7,#7c5af7); border-radius:14px; padding:14px; font-size:14px; font-weight:600; color:#fff; text-align:center; }
+  .divider { display:flex; align-items:center; gap:10px; margin:22px 0 16px; }
+  .divider-line { flex:1; height:1px; background:var(--border); }
+  .divider-text { font-size:11px; color:var(--muted); }
+  .trust-row { display:flex; gap:8px; }
+  .trust-chip { flex:1; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:10px 6px; text-align:center; font-size:11px; color:var(--muted); }
+  .login-footer { margin-top:auto; text-align:center; font-size:11px; color:var(--muted); line-height:1.65; padding-top:14px; }
+  .login-footer a { color:var(--accent); cursor:pointer; }
+
+  /* ══════════════════════════════════
+     VERIFY
+  ══════════════════════════════════ */
+  .verify-content { position:relative; z-index:2; padding:24px 28px; display:flex; flex-direction:column; height:100%; }
+  .back-btn { width:36px; height:36px; background:rgba(255,255,255,0.06); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--text); margin-bottom:26px; }
+  .verify-icon { width:58px; height:58px; background:rgba(79,142,247,0.12); border-radius:18px; border:1px solid rgba(79,142,247,0.3); display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:18px; }
+  .verify-headline { font-size:20px; font-weight:600; margin-bottom:8px; }
+  .verify-sub { font-size:12px; color:var(--muted); line-height:1.65; margin-bottom:28px; }
+  .verify-sub strong { color:var(--accent); }
+  .otp-row { display:flex; gap:10px; margin-bottom:28px; }
+  .otp-box { flex:1; aspect-ratio:1; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; font-family:var(--mono); color:var(--text); }
+  .otp-box.filled { background:rgba(79,142,247,0.1); border-color:rgba(79,142,247,0.5); color:var(--accent); }
+  .otp-box.active { border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,142,247,0.15); }
+  .resend { text-align:center; font-size:12px; color:var(--muted); margin-top:auto; }
+  .resend span { color:var(--accent); }
+
+  /* ══════════════════════════════════
+     HOME
+  ══════════════════════════════════ */
+  .home-header { padding:8px 14px 10px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .home-logo { font-size:18px; font-weight:700; letter-spacing:-0.5px; background:linear-gradient(135deg,#4f8ef7,#7c5af7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .home-actions { display:flex; align-items:center; gap:5px; }
+  .credits-badge { display:flex; align-items:center; gap:5px; background:rgba(79,142,247,0.12); border:1px solid rgba(79,142,247,0.25); border-radius:20px; padding:5px 10px; font-size:12px; font-weight:600; color:var(--accent); }
+  .credits-badge .num { font-family:var(--mono); font-size:13px; }
+  .action-btn { height:27px; padding:0 9px; border-radius:9px; font-size:10px; font-weight:600; display:flex; align-items:center; gap:4px; white-space:nowrap; }
+  .action-btn.buy { background:rgba(79,142,247,0.12); border:1px solid rgba(79,142,247,0.3); color:var(--accent); }
+  .action-btn.ad { background:rgba(247,182,79,0.12); border:1px solid rgba(247,182,79,0.3); color:var(--amber); }
+
+  .map-area { position:relative; overflow:hidden; background:#0d1628; }
+  .map-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(79,142,247,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(79,142,247,0.05) 1px, transparent 1px); background-size:30px 30px; }
+  .map-road { position:absolute; background:rgba(79,142,247,0.08); }
+  .map-pulse { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
+  .pulse-ring { position:absolute; border-radius:50%; border:1.5px solid rgba(79,142,247,0.4); animation:pulseRing 3s ease-out infinite; }
+  .pulse-ring:nth-child(1){width:60px;height:60px;margin:-30px 0 0 -30px;animation-delay:0s;}
+  .pulse-ring:nth-child(2){width:110px;height:110px;margin:-55px 0 0 -55px;animation-delay:.8s;}
+  .pulse-ring:nth-child(3){width:170px;height:170px;margin:-85px 0 0 -85px;animation-delay:1.6s;border-color:rgba(79,142,247,0.15);}
+  @keyframes pulseRing{0%{opacity:1;transform:scale(.7);}100%{opacity:0;transform:scale(1.3);}}
+  .map-center-dot{position:absolute;width:14px;height:14px;background:var(--accent);border-radius:50%;border:2px solid #fff;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;box-shadow:0 0 12px var(--accent);}
+  .user-dot{position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid #fff;z-index:4;}
+  .u1{background:var(--accent2);top:38%;left:65%;box-shadow:0 0 8px var(--accent2);}
+  .u2{background:var(--green);top:62%;left:30%;box-shadow:0 0 8px var(--green);}
+  .u3{background:var(--amber);top:44%;left:22%;box-shadow:0 0 8px var(--amber);}
+  .u4{background:#f7546a;top:68%;left:72%;box-shadow:0 0 8px #f7546a;}
+  .map-fade{position:absolute;bottom:0;left:0;right:0;height:90px;background:linear-gradient(to top, var(--surface) 20%, transparent);pointer-events:none;z-index:6;}
+  .km-badge{position:absolute;top:12px;right:14px;z-index:7;background:rgba(10,14,26,0.82);border:1px solid var(--border);border-radius:10px;padding:5px 10px;font-size:11px;color:var(--muted);font-family:var(--mono);}
+  .km-badge span{color:var(--accent);font-weight:700;}
+
+  .match-area{padding:10px 28px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;background:var(--surface);z-index:10;}
+  .match-btn{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#4f8ef7,#7c5af7);display:flex;align-items:center;justify-content:center;flex-direction:column;animation:btnPulse 2s ease-in-out infinite;}
+  @keyframes btnPulse{0%,100%{box-shadow:0 0 0 8px rgba(79,142,247,0.1),0 0 0 16px rgba(79,142,247,0.05);}50%{box-shadow:0 0 0 12px rgba(79,142,247,0.15),0 0 0 22px rgba(79,142,247,0.07);}}
+  .match-btn-icon{font-size:26px;}
+  .match-btn-text{font-size:9px;font-weight:600;letter-spacing:.5px;margin-top:2px;}
+  .nearby-count{font-size:11px;color:var(--muted);}
+  .nearby-count span{color:var(--green);font-weight:600;}
+
+  /* ══════════════════════════════════
+     MATCH FOUND
+  ══════════════════════════════════ */
+  .match-found-screen{position:absolute;inset:0;z-index:50;background:radial-gradient(ellipse at 50% 40%, rgba(79,142,247,0.3) 0%, rgba(10,14,26,0.97) 65%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;animation:fadeIn .5s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:scale(1);}}
+  .mf-label{font-size:11px;font-weight:600;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:20px;}
+  .mf-avatars{display:flex;align-items:center;gap:18px;margin-bottom:18px;}
+  .anon-avatar{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;}
+  .anon-avatar.mine{background:rgba(79,142,247,0.15);border:2px solid rgba(79,142,247,0.5);}
+  .anon-avatar.theirs{background:rgba(124,90,247,0.15);border:2px solid rgba(124,90,247,0.5);font-size:32px;color:var(--accent2);}
+  .mf-distance{font-size:13px;color:var(--muted);margin-bottom:10px;}
+  .mf-distance span{color:var(--green);font-weight:600;}
+  .info-box{border-radius:13px;padding:11px 14px;font-size:11px;line-height:1.65;margin-bottom:12px;width:100%;}
+  .info-box.purple{background:rgba(124,90,247,0.08);border:1px solid rgba(124,90,247,0.2);color:var(--muted);}
+  .info-box.purple strong{color:var(--accent2);}
+  .info-box.red{background:rgba(247,84,106,0.07);border:1px solid rgba(247,84,106,0.2);color:var(--muted);}
+  .info-box.red strong{color:var(--red);}
+  .mf-btn{width:100%;background:linear-gradient(135deg,#4f8ef7,#7c5af7);border-radius:14px;padding:13px;font-size:14px;font-weight:600;color:#fff;text-align:center;margin-bottom:10px;}
+  .mf-btn-secondary{width:100%;text-align:center;font-size:12px;color:var(--muted);padding:8px;}
+
+  /* ══════════════════════════════════
+     MESSAGES — shared
+  ══════════════════════════════════ */
+  .msg-back{font-size:18px;cursor:pointer;color:var(--muted);flex-shrink:0;}
+  .msg-header{padding:8px 18px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface);z-index:10;position:relative;}
+  .msg-anon-avatar{width:38px;height:38px;border-radius:50%;background:rgba(124,90,247,0.15);border:1.5px solid rgba(124,90,247,0.4);display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .msg-anon-label{font-size:14px;font-weight:600;color:var(--text);}
+  .msg-anon-sub{font-size:11px;color:var(--muted);}
+
+  .session-banner{background:rgba(79,142,247,0.07);border-bottom:1px solid rgba(79,142,247,0.12);padding:5px 16px;display:flex;align-items:center;gap:7px;font-size:10px;color:var(--accent);flex-shrink:0;}
+  .session-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.5s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  .timer-bar{background:rgba(247,84,106,0.08);border-bottom:1px solid rgba(247,84,106,0.15);padding:7px 18px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--red);font-family:var(--mono);flex-shrink:0;}
+  .timer-time{font-weight:700;font-size:14px;}
+  .timer-track{flex:1;height:3px;background:rgba(247,84,106,0.15);border-radius:2px;overflow:hidden;}
+  .timer-fill{height:100%;background:var(--red);border-radius:2px;}
+
+  .messages-area{flex:1;overflow:hidden;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--bg);}
+  .anon-divider{text-align:center;font-size:10px;color:var(--muted);padding:2px 0;}
+  .msg-bubble{max-width:75%;padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.5;}
+  .msg-bubble.them{background:var(--surface2);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
+  .msg-bubble.me{background:linear-gradient(135deg,#4f8ef7,#7c5af7);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+  .msg-time{font-size:9px;margin-top:3px;}
+  .msg-time.them{color:var(--muted);}
+  .msg-time.me{color:rgba(255,255,255,0.5);text-align:right;}
+  .loc-bubble{align-self:center;background:rgba(34,212,126,0.08);border:1px solid rgba(34,212,126,0.25);border-radius:14px;padding:7px 13px;font-size:11px;color:var(--green);display:flex;align-items:center;gap:6px;}
+
+  .msg-input-row{padding:10px 16px;display:flex;gap:8px;align-items:center;background:var(--surface);flex-shrink:0;}
+  .msg-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:20px;padding:8px 14px;font-size:12px;color:var(--muted);font-family:var(--font);}
+  .loc-btn{width:34px;height:34px;background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .send-btn{width:34px;height:34px;background:linear-gradient(135deg,#4f8ef7,#7c5af7);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+
+  /* decision footer */
+  .decision-footer{padding:10px 16px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;}
+  .decision-text{font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px;line-height:1.5;}
+  .decision-text strong{color:var(--text);}
+  .decision-btns{display:flex;gap:8px;}
+  .decision-btn{flex:1;padding:10px;border-radius:12px;font-size:12px;font-weight:600;text-align:center;}
+  .decision-btn.accept{background:rgba(34,212,126,0.1);border:1px solid rgba(34,212,126,0.35);color:var(--green);}
+  .decision-btn.decline{background:rgba(247,84,106,0.08);border:1px solid rgba(247,84,106,0.25);color:var(--red);}
+
+  /* accepted */
+  .accepted-banner{background:rgba(34,212,126,0.07);border-bottom:1px solid rgba(34,212,126,0.2);padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:10px;color:var(--green);flex-shrink:0;}
+
+  /* ══════════════════════════════════
+     EXIT WARNING OVERLAY
+  ══════════════════════════════════ */
+  .exit-overlay{position:absolute;inset:0;z-index:80;background:rgba(6,8,15,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;backdrop-filter:blur(3px);}
+  .exit-card{background:var(--surface);border:1px solid rgba(247,84,106,0.3);border-radius:20px;padding:24px;width:100%;}
+  .exit-icon{font-size:32px;text-align:center;margin-bottom:12px;}
+  .exit-title{font-size:16px;font-weight:600;text-align:center;margin-bottom:8px;}
+  .exit-sub{font-size:12px;color:var(--muted);text-align:center;line-height:1.65;margin-bottom:20px;}
+  .exit-sub strong{color:var(--red);}
+  .exit-btn-stay{width:100%;background:linear-gradient(135deg,#4f8ef7,#7c5af7);border-radius:13px;padding:12px;font-size:13px;font-weight:600;color:#fff;text-align:center;margin-bottom:8px;}
+  .exit-btn-leave{width:100%;text-align:center;font-size:12px;color:var(--red);padding:8px;}
+
+  /* ══════════════════════════════════
+     PURCHASE
+  ══════════════════════════════════ */
+  .purchase-header{padding:10px 22px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+  .purchase-header h2{font-size:18px;font-weight:600;}
+  .purchase-header p{font-size:12px;color:var(--muted);margin-top:4px;}
+  .purchase-body{flex:1;padding:18px;overflow:hidden;display:flex;flex-direction:column;gap:11px;}
+  .pack-card{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px 17px;display:flex;align-items:center;gap:13px;position:relative;overflow:hidden;}
+  .pack-card.featured{border-color:rgba(79,142,247,0.5);background:rgba(79,142,247,0.06);}
+  .pack-badge{position:absolute;top:11px;right:13px;font-size:9px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:6px;}
+  .pack-badge.best{background:rgba(79,142,247,0.15);color:var(--accent);border:1px solid rgba(79,142,247,0.3);}
+  .pack-badge.value{background:rgba(34,212,126,0.12);color:var(--green);border:1px solid rgba(34,212,126,0.3);}
+  .pack-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;}
+  .pack-icon.s{background:rgba(124,90,247,0.15);border:1px solid rgba(124,90,247,0.25);}
+  .pack-icon.m{background:rgba(79,142,247,0.15);border:1px solid rgba(79,142,247,0.25);}
+  .pack-icon.l{background:rgba(34,212,126,0.12);border:1px solid rgba(34,212,126,0.25);}
+  .pack-info{flex:1;}
+  .pack-name{font-size:14px;font-weight:600;}
+  .pack-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+  .pack-price{font-size:17px;font-weight:700;font-family:var(--mono);}
+  .pack-price small{font-size:10px;font-weight:400;color:var(--muted);display:block;}
+  .price-s{color:var(--accent2);}
+  .price-m{color:var(--accent);}
+  .price-l{color:var(--green);}
+  .ad-row{background:rgba(247,182,79,0.06);border:1px solid rgba(247,182,79,0.2);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+  .purchase-note{text-align:center;font-size:10px;color:var(--muted);line-height:1.65;margin-top:auto;}
+  .purchase-note a{color:var(--accent);}
+
+  /* ══════════════════════════════════
+     TERMS & PRIVACY (shared shell)
+  ══════════════════════════════════ */
+  .legal-header{padding:8px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;gap:12px;background:var(--surface);}
+  .legal-back{width:34px;height:34px;background:rgba(255,255,255,0.06);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text);flex-shrink:0;}
+  .legal-title{font-size:15px;font-weight:600;}
+  .legal-date{font-size:10px;color:var(--muted);}
+  .legal-body{flex:1;overflow:hidden;padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;background:var(--bg);}
+  .legal-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px;}
+  .legal-text{font-size:11px;color:var(--muted);line-height:1.75;}
+  .legal-text strong{color:var(--text);font-weight:500;}
+  .legal-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .legal-chip{font-size:10px;padding:4px 10px;border-radius:8px;font-weight:500;}
+  .legal-chip.blue{background:rgba(79,142,247,0.1);color:var(--accent);border:1px solid rgba(79,142,247,0.25);}
+  .legal-chip.purple{background:rgba(124,90,247,0.1);color:var(--accent2);border:1px solid rgba(124,90,247,0.25);}
+  .legal-chip.green{background:rgba(34,212,126,0.08);color:var(--green);border:1px solid rgba(34,212,126,0.25);}
+  .legal-chip.red{background:rgba(247,84,106,0.08);color:var(--red);border:1px solid rgba(247,84,106,0.25);}
+  .legal-divider{height:1px;background:var(--border);}
+  .legal-footer-note{font-size:10px;color:var(--muted);text-align:center;line-height:1.65;padding:0 4px;}
+  .legal-footer-note a{color:var(--accent);}
+
+  /* ══════════════════════════════════
+     FLOW DIAGRAM
+  ══════════════════════════════════ */
+  .flow-section{width:100%;max-width:960px;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:32px 28px;}
+  .flow-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2.5px;color:var(--muted);margin-bottom:28px;text-align:center;}
+  .flow-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;}
+  .fn{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-size:11px;font-weight:600;text-align:center;min-width:88px;}
+  .fn.blue{background:rgba(79,142,247,0.1);border-color:rgba(79,142,247,0.35);color:var(--accent);}
+  .fn.amber{background:rgba(247,182,79,0.08);border-color:rgba(247,182,79,0.28);color:var(--amber);}
+  .fn.green{background:rgba(34,212,126,0.08);border-color:rgba(34,212,126,0.28);color:var(--green);}
+  .fn.red{background:rgba(247,84,106,0.08);border-color:rgba(247,84,106,0.28);color:var(--red);}
+  .fa{font-size:15px;color:var(--muted);padding:0 2px;}
+  .flow-note{font-size:10px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6;}
+  .flow-note strong{color:var(--red);}
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <h1>UniMeet</h1>
+  <p>University Social Meetup App — Full UI Design Mockup</p>
+</div>
+
+<!-- ════════════ ROW 1 ════════════ -->
+<div class="screens-row">
+
+  <!-- 1. LOGIN -->
+  <div class="screen-wrap">
+    <div class="screen-label">1 · Sign In</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>⚡ 92%</span></div>
+      <div class="screen-content">
+        <div class="login-bg"></div>
+        <div class="login-content">
+          <div class="wordmark">UniMeet</div>
+          <div class="tagline">Instant campus connections</div>
+          <div class="login-headline">Join your<br>university network</div>
+          <div class="login-sub">Only .edu institutional email addresses are accepted. Verified, secure, and anonymous.</div>
+          <div class="input-label">Institutional Email</div>
+          <div class="input-field">
+            <span style="color:var(--muted);font-size:14px;">✉</span>
+            <span class="ph">firstname@university.edu</span>
+            <span class="edu-badge">.edu only</span>
+          </div>
+          <div class="btn-primary">Send Verification Code</div>
+          <div class="divider">
+            <div class="divider-line"></div>
+            <div class="divider-text">secure sign-in</div>
+            <div class="divider-line"></div>
+          </div>
+          <div class="trust-row">
+            <div class="trust-chip">🎓 Verified</div>
+            <div class="trust-chip">🔒 Anonymous</div>
+            <div class="trust-chip">🌍 3 mile radius</div>
+          </div>
+          <div class="login-footer">
+            By continuing you agree to our<br>
+            <a>Terms of Service</a> and <a>Privacy Policy</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. VERIFY -->
+  <div class="screen-wrap">
+    <div class="screen-label">2 · Verification</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>⚡ 92%</span></div>
+      <div class="screen-content">
+        <div class="login-bg"></div>
+        <div class="verify-content">
+          <div class="back-btn">←</div>
+          <div class="verify-icon">📬</div>
+          <div class="verify-headline">Enter your code</div>
+          <div class="verify-sub">We sent a 6-digit code to <strong>firstname@university.edu</strong>. Check your inbox.</div>
+          <div class="otp-row">
+            <div class="otp-box filled">4</div>
+            <div class="otp-box filled">2</div>
+            <div class="otp-box filled">7</div>
+            <div class="otp-box active"></div>
+            <div class="otp-box"></div>
+            <div class="otp-box"></div>
+          </div>
+          <div class="btn-primary">Verify & Continue</div>
+          <div style="margin-top:18px;background:rgba(79,142,247,0.06);border:1px solid rgba(79,142,247,0.15);border-radius:13px;padding:11px 14px;">
+            <div style="font-size:11px;color:var(--muted);line-height:1.65;"><span style="color:var(--accent);font-weight:600;">Tip:</span> Code expires in 5 minutes. Also check your spam folder.</div>
+          </div>
+          <div class="resend" style="margin-top:auto;padding-top:14px;">Didn't receive it? <span>Resend</span> (2:47)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. HOME -->
+  <div class="screen-wrap">
+    <div class="screen-label">3 · Home Screen</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>⚡ 85%</span></div>
+      <div class="screen-content" style="display:flex;flex-direction:column;">
+        <div class="home-header">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="home-logo">UniMeet</div>
+            <div style="width:28px;height:28px;background:rgba(247,84,106,0.1);border:1px solid rgba(247,84,106,0.28);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;" title="Sign Out">↪</div>
+          </div>
+          <div class="home-actions">
+            <div class="credits-badge">⚡ <span class="num">3</span></div>
+            <div class="action-btn buy">+ Buy</div>
+            <div class="action-btn ad">📺 Watch Ad</div>
+          </div>
+        </div>
+        <div class="map-area" style="flex:1;min-height:0;">
+          <div class="map-grid"></div>
+          <div class="map-road" style="width:100%;height:2px;top:40%;"></div>
+          <div class="map-road" style="width:100%;height:2px;top:65%;opacity:.5;"></div>
+          <div class="map-road" style="width:2px;height:100%;left:35%;opacity:.6;"></div>
+          <div class="map-road" style="width:2px;height:100%;left:68%;opacity:.4;"></div>
+          <div class="km-badge"><span>3</span> mi radius</div>
+          <div class="map-pulse">
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring"></div>
+          </div>
+          <div class="map-center-dot"></div>
+          <div class="user-dot u1"></div>
+          <div class="user-dot u2"></div>
+          <div class="user-dot u3"></div>
+          <div class="user-dot u4"></div>
+          <div style="position:absolute;top:30%;left:58%;background:rgba(124,90,247,0.9);border-radius:7px;padding:3px 8px;font-size:9px;color:#fff;">❓ anonymous</div>
+          <div style="position:absolute;top:55%;left:16%;background:rgba(34,212,126,0.9);border-radius:7px;padding:3px 8px;font-size:9px;color:#fff;">❓ anonymous</div>
+          <div class="map-fade"></div>
+        </div>
+        <div class="match-area">
+          <div class="match-btn">
+            <div class="match-btn-icon">⚡</div>
+            <div class="match-btn-text">MATCH</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MATCH FOUND -->
+  <div class="screen-wrap">
+    <div class="screen-label">4 · Match Found</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>⚡ 85%</span></div>
+      <div class="screen-content" style="background:var(--bg);">
+        <div class="match-found-screen">
+          <div class="mf-label">⚡ Match Found!</div>
+          <div class="mf-avatars">
+            <div class="anon-avatar mine">🙂</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="font-size:10px;color:var(--muted);">vs</div>
+            </div>
+            <div class="anon-avatar theirs">?</div>
+          </div>
+          <div class="mf-distance">Distance: <span>0.5 mi away</span></div>
+          <div class="info-box purple">
+            <strong>🔒 Full anonymity</strong><br>
+            The other person's identity is hidden. If you both agree to meet, you can reveal yourselves.
+          </div>
+          <div class="info-box red">
+            <strong>⏱ Note:</strong> Even if you close the app, the <strong>5-minute timer continues</strong> in the background. You'll receive a notification.
+          </div>
+          <div class="mf-btn">Start Chat →</div>
+          <div class="mf-btn-secondary">Decline</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════ ROW 2 ════════════ -->
+<div class="screens-row">
+
+  <!-- 5. CHAT (active) -->
+  <div class="screen-wrap">
+    <div class="screen-label">5 · Chat — Active</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>⚡ 85%</span></div>
+      <div class="screen-content" style="display:flex;flex-direction:column;">
+        <div class="msg-header">
+          <div class="msg-back">←</div>
+          <div class="msg-anon-avatar">❓</div>
+          <div>
+            <div class="msg-anon-label">Anonymous User</div>
+            <div class="msg-anon-sub">● 0.5 mi away</div>
+          </div>
+        </div>
+        <div class="session-banner">
+          <div class="session-dot"></div>
+          Session active · Timer continues if you close the app
+        </div>
+        <div class="timer-bar">
+          <span>⏱</span>
+          <span class="timer-time">03:41</span>
+          <div class="timer-track"><div class="timer-fill" style="width:63%;"></div></div>
+          <span style="color:var(--muted);font-size:11px;">left</span>
+        </div>
+        <div class="messages-area">
+          <div class="anon-divider">— Identities are hidden —</div>
+          <div class="msg-bubble them">Hey! Are you at the library right now? 🏫<div class="msg-time them">09:41</div></div>
+          <div class="msg-bubble me">Yeah, ground floor. Where are you?<div class="msg-time me">09:41</div></div>
+          <div class="msg-bubble them">Near the entrance. Wanna grab a coffee?<div class="msg-time them">09:42</div></div>
+          <div class="loc-bubble">📍 Location shared · Library Entrance</div>
+          <div class="msg-bubble me">Sounds great, I'll be there in 5 min 👍<div class="msg-time me">09:43</div></div>
+        </div>
+        <div class="msg-input-row">
+          <div class="loc-btn">📍</div>
+          <div class="msg-input">Type a message...</div>
+          <div class="send-btn">↑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. EXIT WARNING (back button pressed) -->
+  <div class="screen-wrap">
+    <div class="screen-label">6 · Exit Warning</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:44</span><span>⚡ 84%</span></div>
+      <div class="screen-content" style="display:flex;flex-direction:column;position:relative;">
+        <!-- blurred chat behind -->
+        <div class="msg-header">
+          <div class="msg-anon-avatar">❓</div>
+          <div><div class="msg-anon-label">Anonymous User</div><div class="msg-anon-sub">● 0.5 mi away</div></div>
+        </div>
+        <div class="timer-bar" style="opacity:.4;">
+          <span>⏱</span><span class="timer-time">02:54</span>
+          <div class="timer-track"><div class="timer-fill" style="width:38%;"></div></div>
+          <span style="color:var(--muted);font-size:11px;">left</span>
+        </div>
+        <div class="messages-area" style="opacity:.25;">
+          <div class="msg-bubble them">Hey! Are you at the library?</div>
+          <div class="msg-bubble me">Yeah, ground floor.</div>
+        </div>
+        <!-- OVERLAY -->
+        <div class="exit-overlay">
+          <div class="exit-card">
+            <div class="exit-icon">⚠️</div>
+            <div class="exit-title">Leave the chat?</div>
+            <div class="exit-sub">If you go back, the match will be <strong>immediately ended</strong> and the conversation will be permanently deleted. This cannot be undone.</div>
+            <div class="exit-btn-stay">Stay in Chat</div>
+            <div class="exit-btn-leave">Leave & End Match</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. TIMER ENDED — DECISION -->
+  <div class="screen-wrap">
+    <div class="screen-label">7 · Time's Up — Decision</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:51</span><span>⚡ 83%</span></div>
+      <div class="screen-content" style="display:flex;flex-direction:column;">
+        <div class="msg-header">
+          <div class="msg-back">←</div>
+          <div class="msg-anon-avatar">❓</div>
+          <div><div class="msg-anon-label">Anonymous User</div><div class="msg-anon-sub">● 0.5 mi away</div></div>
+        </div>
+        <!-- expired bar -->
+        <div style="background:rgba(247,182,79,0.08);border-bottom:1px solid rgba(247,182,79,0.2);padding:7px 18px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--amber);font-family:var(--mono);flex-shrink:0;">
+          <span>⏰</span><span style="font-weight:700;font-size:14px;">00:00</span>
+          <div style="flex:1;height:3px;background:rgba(247,182,79,0.15);border-radius:2px;"></div>
+          <span style="color:var(--muted);">Time's up</span>
+        </div>
+        <div class="messages-area">
+          <div class="anon-divider">— Identities are hidden —</div>
+          <div class="msg-bubble them">Hey! Are you at the library? 🏫<div class="msg-time them">09:41</div></div>
+          <div class="msg-bubble me">Yeah, ground floor. Where are you?<div class="msg-time me">09:41</div></div>
+          <div class="msg-bubble them">Near the entrance. Wanna grab a coffee?<div class="msg-time them">09:42</div></div>
+          <div class="msg-bubble me">Sounds great, I'll be there in 5 min 👍<div class="msg-time me">09:43</div></div>
+          <div style="text-align:center;font-size:10px;color:var(--amber);padding:6px 10px;background:rgba(247,182,79,0.05);border-radius:8px;">⏰ 5 minutes elapsed</div>
+        </div>
+        <div class="decision-footer">
+          <div class="decision-text">Would you like to meet up?<br><strong>Accept to keep the chat going.</strong></div>
+          <div class="decision-btns">
+            <div class="decision-btn accept">✓ Yes, let's meet!</div>
+            <div class="decision-btn decline">✕ No, end chat</div>
+          </div>
+        </div>
+        <div style="padding:8px 16px;display:flex;gap:8px;align-items:center;background:var(--surface);flex-shrink:0;opacity:.35;pointer-events:none;">
+          <div class="loc-btn">📍</div>
+          <div class="msg-input">Messaging time has ended</div>
+          <div class="send-btn">↑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. CHAT CONTINUED -->
+  <div class="screen-wrap">
+    <div class="screen-label">8 · Meet Accepted</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:52</span><span>⚡ 83%</span></div>
+      <div class="screen-content" style="display:flex;flex-direction:column;">
+        <div class="msg-header">
+          <div class="msg-back">←</div>
+          <div class="msg-anon-avatar" style="background:rgba(34,212,126,0.15);border-color:rgba(34,212,126,0.4);">😊</div>
+          <div>
+            <div class="msg-anon-label">Anonymous User</div>
+            <div class="msg-anon-sub" style="color:var(--green);">● Meetup confirmed</div>
+          </div>
+        </div>
+        <div class="accepted-banner">✓ Both accepted — chat continues</div>
+        <div class="messages-area">
+          <div class="anon-divider">— Identities are hidden —</div>
+          <div class="msg-bubble them">Wanna grab a coffee?<div class="msg-time them">09:42</div></div>
+          <div class="msg-bubble me">Sounds great, 5 min 👍<div class="msg-time me">09:43</div></div>
+          <div style="text-align:center;font-size:10px;color:var(--green);padding:6px 10px;background:rgba(34,212,126,0.05);border-radius:8px;">✓ Meetup accepted by both</div>
+          <div class="loc-bubble">📍 Location shared · Library Entrance</div>
+          <div class="msg-bubble them">Waiting at the library entrance 😊<div class="msg-time them">09:52</div></div>
+          <div class="msg-bubble me">On my way! 🚶<div class="msg-time me">09:52</div></div>
+        </div>
+        <div class="msg-input-row">
+          <div class="loc-btn">📍</div>
+          <div class="msg-input">Type a message...</div>
+          <div class="send-btn">↑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════ ROW 3: Purchase + Legal ════════════ -->
+<div class="screens-row">
+
+  <!-- 9. PURCHASE -->
+  <div class="screen-wrap">
+    <div class="screen-label">9 · Purchase Credits</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>⚡ 85%</span></div>
+      <div class="screen-content" style="display:flex;flex-direction:column;">
+        <div class="purchase-header">
+          <h2>Get Match Credits</h2>
+          <p>Each credit gives you 1 match opportunity</p>
+        </div>
+        <div class="purchase-body">
+          <div class="pack-card">
+            <div class="pack-icon s">⚡</div>
+            <div class="pack-info">
+              <div class="pack-name">Starter</div>
+              <div class="pack-desc">1 match credit</div>
+            </div>
+            <div class="pack-price price-s">$2.99<small>per credit</small></div>
+          </div>
+          <div class="pack-card featured">
+            <div class="pack-badge best">MOST POPULAR</div>
+            <div class="pack-icon m">⚡⚡</div>
+            <div class="pack-info">
+              <div class="pack-name">Pack</div>
+              <div class="pack-desc">3 match credits · 11% off</div>
+            </div>
+            <div class="pack-price price-m">$7.99<small>$2.66/credit</small></div>
+          </div>
+          <div class="pack-card">
+            <div class="pack-badge value">BEST VALUE</div>
+            <div class="pack-icon l">🚀</div>
+            <div class="pack-info">
+              <div class="pack-name">Super Pack</div>
+              <div class="pack-desc">10 match credits · 17% off</div>
+            </div>
+            <div class="pack-price price-l">$24.99<small>$2.50/credit</small></div>
+          </div>
+          <div class="ad-row">
+            <span style="font-size:20px;">📺</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--amber);">Earn a Free Credit</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">Watch a 30-sec ad → 1 free credit</div>
+            </div>
+          </div>
+          <div class="purchase-note">Payments processed securely via App Store / Google Play.<br><a>Privacy Policy</a> · <a>Refund Policy</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. TERMS OF SERVICE -->
+  <div class="screen-wrap">
+    <div class="screen-label">10 · Terms of Service</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>⚡ 85%</span></div>
+      <div class="screen-content" style="display:flex;flex-direction:column;">
+        <div class="legal-header">
+          <div class="legal-back">←</div>
+          <div>
+            <div class="legal-title">Terms of Service</div>
+            <div class="legal-date">Last updated: June 2025</div>
+          </div>
+        </div>
+        <div class="legal-body">
+
+          <div>
+            <div class="legal-section-title">1. Eligibility</div>
+            <div class="legal-text">You must be a <strong>currently enrolled university student</strong> with a valid institutional (.edu) email address to use UniMeet. By registering, you confirm that you meet this requirement.</div>
+          </div>
+
+          <div class="legal-divider"></div>
+
+          <div>
+            <div class="legal-section-title">2. How Matching Works</div>
+            <div class="legal-text">When you initiate a match, the app searches for other active users within a <strong>3 mile radius</strong>. If a match is found, both users have <strong>5 minutes</strong> to chat. Leaving the chat screen ends the session immediately.</div>
+            <div class="legal-chip-row">
+              <div class="legal-chip blue">3 mile radius</div>
+              <div class="legal-chip purple">5 min session</div>
+              <div class="legal-chip red">Exit = session ends</div>
+            </div>
+          </div>
+
+          <div class="legal-divider"></div>
+
+          <div>
+            <div class="legal-section-title">3. Anonymity & Identity</div>
+            <div class="legal-text">All users are <strong>fully anonymous</strong> during chat. No names, photos, or personal details are shared automatically. Identity may only be revealed if <strong>both parties</strong> mutually agree to meet.</div>
+          </div>
+
+          <div class="legal-divider"></div>
+
+          <div>
+            <div class="legal-section-title">4. Credits & Purchases</div>
+            <div class="legal-text">Match credits are <strong>non-refundable</strong> once consumed. Purchases are processed via App Store or Google Play. Credits earned via ads have no monetary value.</div>
+          </div>
+
+          <div class="legal-divider"></div>
+
+          <div>
+            <div class="legal-section-title">5. Prohibited Conduct</div>
+            <div class="legal-text">Harassment, hate speech, impersonation, and any illegal activity are <strong>strictly forbidden</strong> and will result in immediate and permanent account termination.</div>
+            <div class="legal-chip-row">
+              <div class="legal-chip red">No harassment</div>
+              <div class="legal-chip red">No impersonation</div>
+            </div>
+          </div>
+
+          <div class="legal-footer-note">By using UniMeet you agree to these terms.<br>Questions? <a>support@unimeet.app</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. PRIVACY POLICY -->
+  <div class="screen-wrap">
+    <div class="screen-label">11 · Privacy Policy</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>⚡ 85%</span></div>
+      <div class="screen-content" style="display:flex;flex-direction:column;">
+        <div class="legal-header">
+          <div class="legal-back">←</div>
+          <div>
+            <div class="legal-title">Privacy Policy</div>
+            <div class="legal-date">Last updated: June 2025</div>
+          </div>
+        </div>
+        <div class="legal-body">
+
+          <div>
+            <div class="legal-section-title">1. Data We Collect</div>
+            <div class="legal-text">We collect your <strong>institutional email address</strong> (for verification only), <strong>approximate location</strong> (during active sessions only), and <strong>in-app activity</strong> such as match frequency. We never store chat messages.</div>
+            <div class="legal-chip-row">
+              <div class="legal-chip blue">.edu email</div>
+              <div class="legal-chip purple">Approx. location</div>
+              <div class="legal-chip green">No messages stored</div>
+            </div>
+          </div>
+
+          <div class="legal-divider"></div>
+
+          <div>
+            <div class="legal-section-title">2. Location Data</div>
+            <div class="legal-text">Your precise location is <strong>never stored or shared</strong>. We only use it in real-time to find nearby users within a 3 mile radius. Location access is active <strong>only during an open session</strong>.</div>
+          </div>
+
+          <div class="legal-divider"></div>
+
+          <div>
+            <div class="legal-section-title">3. Anonymity</div>
+            <div class="legal-text">Your identity is <strong>never revealed</strong> to other users without explicit mutual consent. Your .edu email is used solely for account verification and is never visible to other users.</div>
+          </div>
+
+          <div class="legal-divider"></div>
+
+          <div>
+            <div class="legal-section-title">4. Data Retention</div>
+            <div class="legal-text">Chat messages are <strong>permanently deleted</strong> at the end of each session. Account data is retained as long as your account is active. You may request full deletion at any time.</div>
+            <div class="legal-chip-row">
+              <div class="legal-chip green">Chats auto-deleted</div>
+              <div class="legal-chip blue">Delete anytime</div>
+            </div>
+          </div>
+
+          <div class="legal-divider"></div>
+
+          <div>
+            <div class="legal-section-title">5. Third Parties</div>
+            <div class="legal-text">We use App Store / Google Play for payments. We <strong>do not sell</strong> your data to any third party. Ad networks receive only anonymous, non-identifiable signals.</div>
+          </div>
+
+          <div class="legal-footer-note">For data requests or concerns:<br><a>privacy@unimeet.app</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════ FLOW DIAGRAM ════════════ -->
+<div class="flow-section">
+  <div class="flow-title">App Flow — Key Logic</div>
+  <div class="flow-row">
+    <div class="fn blue">.edu Sign In</div><div class="fa">→</div>
+    <div class="fn blue">OTP Verify</div><div class="fa">→</div>
+    <div class="fn">Home Screen</div><div class="fa">→</div>
+    <div class="fn amber">Tap Match ⚡</div><div class="fa">→</div>
+    <div class="fn amber">Search 3 miles</div><div class="fa">→</div>
+    <div class="fn blue">Match Found</div>
+  </div>
+  <div style="text-align:center;padding:10px 0;color:var(--muted);font-size:18px;">↓</div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <div class="fn red">Declined</div>
+      <div class="fa">↓</div>
+      <div class="fn red">Session Deleted</div>
+    </div>
+    <div style="padding:0 10px;color:var(--muted);font-size:12px;align-self:center;">or</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <div class="fn green">Accepted → Chat</div>
+      <div class="fa">↓</div>
+      <div class="fn">5-min Session</div>
+      <div style="font-size:10px;color:var(--red);margin:-2px 0 4px;">⚠ Timer persists if app closed</div>
+      <div style="font-size:10px;color:var(--red);margin:-2px 0 4px;">⚠ Back button = session ends immediately</div>
+      <div class="fa">↓</div>
+      <div style="display:flex;gap:10px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div class="fn green">Both Accept Meet</div>
+          <div class="fa">↓</div>
+          <div class="fn green">Chat Continues</div>
+        </div>
+        <div style="padding:0 6px;color:var(--muted);font-size:12px;align-self:center;">|</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div class="fn red">Either Declines</div>
+          <div class="fa">↓</div>
+          <div class="fn red">Chat Deleted</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flow-note">
+    <strong>Exit rule:</strong> pressing the back button during an active chat session immediately ends the match and permanently deletes the conversation — no recovery possible.
+  </div>
+</div>
+
+</body>
+</html>
